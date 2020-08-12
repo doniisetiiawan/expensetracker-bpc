@@ -15,6 +15,7 @@ import Template from '../template';
 import MainRouter from '../client/MainRouter';
 import userRoutes from './routes/user.routes';
 import authRoutes from './routes/auth.routes';
+import expenseRoutes from './routes/expense.routes';
 import devBundle from './devBundle';
 import theme from '../client/theme';
 
@@ -37,6 +38,7 @@ app.use(
 
 app.use('/', userRoutes);
 app.use('/', authRoutes);
+app.use('/', expenseRoutes);
 
 app.get('*', (req, res) => {
   const sheets = new ServerStyleSheets();

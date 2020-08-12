@@ -4,6 +4,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
+import { Link } from 'react-router-dom';
 import unicornbikeImg from '../assets/images/seashell.jpg';
 
 const useStyles = makeStyles((theme) => ({
@@ -55,18 +56,26 @@ function Home() {
         Photo by
         {' '}
         <a
-          href="https://unsplash.com/@boudewijn_huysmans"
+          href="https://unsplash.com/@anniespratt"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Boudewijn Huysmans
+          Annie Spratt
         </a>
         {' '}
         on Unsplash
       </Typography>
       <CardContent>
         <Typography variant="body1" component="p">
-          Welcome to the MERN Skeleton home page.
+          Welcome to the MERN Expense Tracker.
+          {' '}
+          <Link to="/signup">Sign up</Link>
+          {' '}
+or
+          {' '}
+          <Link to="/signin">sign in</Link>
+          {' '}
+to get started.
         </Typography>
       </CardContent>
     </Card>
