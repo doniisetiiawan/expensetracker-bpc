@@ -34,6 +34,44 @@ const listByUser = async (params, credentials, signal) => {
   }
 };
 
+const currentMonthPreview = async (credentials, signal) => {
+  try {
+    const response = await fetch(
+      '/api/expenses/current/preview',
+      {
+        method: 'GET',
+        signal,
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${credentials.t}`,
+        },
+      },
+    );
+    return await response.json();
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const expenseByCategory = async (credentials, signal) => {
+  try {
+    const response = await fetch(
+      '/api/expenses/by/category',
+      {
+        method: 'GET',
+        signal,
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${credentials.t}`,
+        },
+      },
+    );
+    return await response.json();
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const update = async (params, credentials, expense) => {
   try {
     const response = await fetch(
@@ -74,5 +112,10 @@ const remove = async (params, credentials) => {
 };
 
 export {
-  create, listByUser, update, remove,
+  create,
+  listByUser,
+  update,
+  remove,
+  currentMonthPreview,
+  expenseByCategory,
 };

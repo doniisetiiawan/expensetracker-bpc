@@ -1,4 +1,5 @@
 import extend from 'lodash/extend';
+import mongoose from 'mongoose';
 import Expense from '../models/expense.model';
 import errorHandler from '../helpers/dbErrorHandler';
 
@@ -57,6 +58,190 @@ const listByUser = async (req, res) => {
   }
 };
 
+const currentMonthPreview = async (req, res) => {
+  const date = new Date();
+  const y = date.getFullYear();
+  const m = date.getMonth();
+  const firstDay = new Date(y, m, 1);
+  const lastDay = new Date(y, m + 1, 0);
+
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+
+  const tomorrow = new Date();
+  tomorrow.setUTCHours(0, 0, 0, 0);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const yesterday = new Date();
+  yesterday.setUTCHours(0, 0, 0, 0);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  try {
+    const currentPreview = await Expense.aggregate([
+      {
+        $facet: {
+          month: [
+            {
+              $match: {
+                incurred_on: {
+                  $gte: firstDay,
+                  $lt: lastDay,
+                },
+                recorded_by: mongoose.Types.ObjectId(
+                  req.auth._id,
+                ),
+              },
+            },
+            {
+              $group: {
+                _id: 'currentMonth',
+                totalSpent: { $sum: '$amount' },
+              },
+            },
+          ],
+          today: [
+            {
+              $match: {
+                incurred_on: { $gte: today, $lt: tomorrow },
+                recorded_by: mongoose.Types.ObjectId(
+                  req.auth._id,
+                ),
+              },
+            },
+            {
+              $group: {
+                _id: 'today',
+                totalSpent: { $sum: '$amount' },
+              },
+            },
+          ],
+          yesterday: [
+            {
+              $match: {
+                incurred_on: {
+                  $gte: yesterday,
+                  $lt: today,
+                },
+                recorded_by: mongoose.Types.ObjectId(
+                  req.auth._id,
+                ),
+              },
+            },
+            {
+              $group: {
+                _id: 'yesterday',
+                totalSpent: { $sum: '$amount' },
+              },
+            },
+          ],
+        },
+      },
+    ]);
+    const expensePreview = {
+      month: currentPreview[0].month[0],
+      today: currentPreview[0].today[0],
+      yesterday: currentPreview[0].yesterday[0],
+    };
+    res.json(expensePreview);
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({
+      error: errorHandler.getErrorMessage(err),
+    });
+  }
+};
+
+const expenseByCategory = async (req, res) => {
+  const date = new Date();
+  const y = date.getFullYear();
+  const m = date.getMonth();
+  const firstDay = new Date(y, m, 1);
+  const lastDay = new Date(y, m + 1, 0);
+
+  try {
+    const categoryMonthlyAvg = await Expense.aggregate([
+      {
+        $facet: {
+          average: [
+            {
+              $match: {
+                recorded_by: mongoose.Types.ObjectId(
+                  req.auth._id,
+                ),
+              },
+            },
+            {
+              $group: {
+                _id: {
+                  category: '$category',
+                  month: { $month: '$incurred_on' },
+                },
+                totalSpent: { $sum: '$amount' },
+              },
+            },
+            {
+              $group: {
+                _id: '$_id.category',
+                avgSpent: { $avg: '$totalSpent' },
+              },
+            },
+            {
+              $project: {
+                _id: '$_id',
+                value: { average: '$avgSpent' },
+              },
+            },
+          ],
+          total: [
+            {
+              $match: {
+                incurred_on: {
+                  $gte: firstDay,
+                  $lte: lastDay,
+                },
+                recorded_by: mongoose.Types.ObjectId(
+                  req.auth._id,
+                ),
+              },
+            },
+            {
+              $group: {
+                _id: '$category',
+                totalSpent: { $sum: '$amount' },
+              },
+            },
+            {
+              $project: {
+                _id: '$_id',
+                value: { total: '$totalSpent' },
+              },
+            },
+          ],
+        },
+      },
+      {
+        $project: {
+          overview: { $setUnion: ['$average', '$total'] },
+        },
+      },
+      { $unwind: '$overview' },
+      { $replaceRoot: { newRoot: '$overview' } },
+      {
+        $group: {
+          _id: '$_id',
+          mergedValues: { $mergeObjects: '$value' },
+        },
+      },
+    ]).exec();
+    res.json(categoryMonthlyAvg);
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({
+      error: errorHandler.getErrorMessage(err),
+    });
+  }
+};
+
 const update = async (req, res) => {
   try {
     let { expense } = req;
@@ -102,4 +287,6 @@ export default {
   hasAuthorization,
   update,
   remove,
+  currentMonthPreview,
+  expenseByCategory,
 };

@@ -5,6 +5,20 @@ import expenseCtrl from '../controllers/expense.controller';
 const router = express.Router();
 
 router
+  .route('/api/expenses/current/preview')
+  .get(
+    authCtrl.requireSignin,
+    expenseCtrl.currentMonthPreview,
+  );
+
+router
+  .route('/api/expenses/by/category')
+  .get(
+    authCtrl.requireSignin,
+    expenseCtrl.expenseByCategory,
+  );
+
+router
   .route('/api/expenses')
   .post(authCtrl.requireSignin, expenseCtrl.create)
   .get(authCtrl.requireSignin, expenseCtrl.listByUser);
