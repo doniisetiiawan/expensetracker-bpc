@@ -6,6 +6,7 @@ const router = express.Router();
 
 router
   .route('/api/expenses')
-  .post(authCtrl.requireSignin, expenseCtrl.create);
+  .post(authCtrl.requireSignin, expenseCtrl.create)
+  .get(authCtrl.requireSignin, expenseCtrl.listByUser);
 
 export default router;

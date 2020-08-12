@@ -9,6 +9,7 @@ import Profile from './user/Profile';
 import PrivateRoute from './auth/PrivateRoute';
 import Menu from './core/Menu';
 import NewExpense from './expense/newExpense';
+import Expenses from './expense/expenses';
 
 function MainRouter() {
   return (
@@ -24,6 +25,10 @@ function MainRouter() {
           component={EditProfile}
         />
         <Route path="/user/:userId" component={Profile} />
+        <PrivateRoute
+          path="/expenses/all"
+          component={Expenses}
+        />
         <PrivateRoute
           path="/expenses/new"
           component={NewExpense}

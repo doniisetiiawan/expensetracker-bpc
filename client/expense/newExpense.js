@@ -5,7 +5,10 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import {
+  DateTimePicker,
+  MuiPickersUtilsProvider,
+} from '@material-ui/pickers';
 import Icon from '@material-ui/core/Icon';
 import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
@@ -137,7 +140,7 @@ function NewExpense() {
             <DateTimePicker
               label="Incurred on"
               className={classes.textField}
-              // views={['year', 'month', 'date']}
+              views={['year', 'month', 'date']}
               value={values.incurred_on}
               onChange={handleDateChange}
               showTodayButton
