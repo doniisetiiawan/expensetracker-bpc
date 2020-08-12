@@ -17,7 +17,8 @@ import TextField from '@material-ui/core/TextField';
 import Icon from '@material-ui/core/Icon';
 import { Redirect } from 'react-router-dom';
 import auth from '../auth/auth-helper';
-import { listByUser } from './api-expense';
+import { listByUser, update } from './api-expense';
+import DeleteExpense from './deleteExpense';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -142,6 +143,35 @@ function Expenses() {
   const handleDateChange = (index) => (date) => {
     const updatedExpenses = [...expenses];
     updatedExpenses[index].incurred_on = date;
+    setExpenses(updatedExpenses);
+  };
+
+  const clickUpdate = (index) => {
+    const expense = expenses[index];
+    update(
+      {
+        expenseId: expense._id,
+      },
+      {
+        t: jwt.token,
+      },
+      expense,
+    ).then((data) => {
+      if (data.error) {
+        setError(data.error);
+      } else {
+        setSaved(true);
+        setTimeout(() => {
+          setSaved(false);
+        }, 3000);
+      }
+    });
+  };
+
+  const removeExpense = (expense) => {
+    const updatedExpenses = [...expenses];
+    const index = updatedExpenses.indexOf(expense);
+    updatedExpenses.splice(index, 1);
     setExpenses(updatedExpenses);
   };
 
@@ -283,15 +313,15 @@ function Expenses() {
                 <Button
                   color="primary"
                   variant="contained"
-                  // onClick={() => clickUpdate(index)}
+                  onClick={() => clickUpdate(index)}
                   className={classes.submit}
                 >
                   Update
                 </Button>
-                {/* <DeleteExpense */}
-                {/*  expense={expense} */}
-                {/*  onRemove={removeExpense} */}
-                {/* /> */}
+                <DeleteExpense
+                  expense={expense}
+                  onRemove={removeExpense}
+                />
               </div>
             </ExpansionPanelDetails>
           </ExpansionPanel>
