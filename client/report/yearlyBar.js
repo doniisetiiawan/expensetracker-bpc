@@ -12,6 +12,7 @@ import {
   VictoryBar,
   VictoryChart,
 } from 'victory';
+import Icon from '@material-ui/core/Icon';
 import auth from '../auth/auth-helper';
 import { yearlyExpenses } from '../expense/api-expense';
 
@@ -91,6 +92,12 @@ function YearlyBar() {
           variant="inline"
         />
       </MuiPickersUtilsProvider>
+      {error && (
+        <Typography component="p" color="error">
+          <Icon color="error">error</Icon>
+          {error}
+        </Typography>
+      )}
 
       <VictoryChart
         theme={VictoryTheme.material}

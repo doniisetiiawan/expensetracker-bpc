@@ -72,6 +72,30 @@ const expenseByCategory = async (credentials, signal) => {
   }
 };
 
+const averageCategories = async (
+  params,
+  credentials,
+  signal,
+) => {
+  const query = queryString.stringify(params);
+  try {
+    const response = await fetch(
+      `/api/expenses/category/averages?${query}`,
+      {
+        method: 'GET',
+        signal,
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${credentials.t}`,
+        },
+      },
+    );
+    return await response.json();
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const yearlyExpenses = async (
   params,
   credentials,
@@ -168,4 +192,5 @@ export {
   expenseByCategory,
   plotExpenses,
   yearlyExpenses,
+  averageCategories,
 };

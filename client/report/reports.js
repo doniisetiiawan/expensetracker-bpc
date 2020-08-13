@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/styles';
 import Divider from '@material-ui/core/Divider';
 import MonthlyScatter from './monthlyScatter';
 import YearlyBar from './yearlyBar';
+import CategoryPie from './categoryPie';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -25,6 +26,8 @@ function Reports() {
       <MonthlyScatter />
       <Divider className={classes.separator} />
       <YearlyBar />
+      <Divider className={classes.separator} />
+      <CategoryPie />
     </div>
   );
 }

@@ -242,6 +242,41 @@ const expenseByCategory = async (req, res) => {
   }
 };
 
+const averageCategories = async (req, res) => {
+  const firstDay = new Date(req.query.firstDay);
+  const lastDay = new Date(req.query.lastDay);
+
+  try {
+    const categoryMonthlyAvg = await Expense.aggregate([
+      {
+        $match: {
+          incurred_on: { $gte: firstDay, $lte: lastDay },
+          recorded_by: mongoose.Types.ObjectId(req.auth._id),
+        },
+      },
+      {
+        $group: {
+          _id: { category: '$category' },
+          totalSpent: { $sum: '$amount' },
+        },
+      },
+      {
+        $group: {
+          _id: '$_id.category',
+          avgSpent: { $avg: '$totalSpent' },
+        },
+      },
+      { $project: { x: '$_id', y: '$avgSpent' } },
+    ]).exec();
+    res.json({ monthAVG: categoryMonthlyAvg });
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({
+      error: errorHandler.getErrorMessage(err),
+    });
+  }
+};
+
 const yearlyExpenses = async (req, res) => {
   const y = req.query.year;
   const firstDay = new Date(y, 0, 1);
@@ -351,4 +386,5 @@ export default {
   expenseByCategory,
   plotExpenses,
   yearlyExpenses,
+  averageCategories,
 };

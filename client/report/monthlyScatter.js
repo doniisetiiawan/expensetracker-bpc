@@ -9,6 +9,7 @@ import MomentUtils from '@date-io/moment';
 import {
   VictoryTheme, VictoryScatter, VictoryChart, VictoryTooltip, VictoryLabel,
 } from 'victory';
+import Icon from '@material-ui/core/Icon';
 import auth from '../auth/auth-helper';
 import { plotExpenses } from '../expense/api-expense';
 
@@ -74,6 +75,12 @@ function MonthlyScatter() {
           variant="inline"
         />
       </MuiPickersUtilsProvider>
+      {error && (
+        <Typography component="p" color="error">
+          <Icon color="error">error</Icon>
+          {error}
+        </Typography>
+      )}
 
       <VictoryChart
         theme={VictoryTheme.material}

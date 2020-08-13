@@ -23,6 +23,13 @@ router
   .get(authCtrl.requireSignin, expenseCtrl.plotExpenses);
 
 router
+  .route('/api/expenses/category/averages')
+  .get(
+    authCtrl.requireSignin,
+    expenseCtrl.averageCategories,
+  );
+
+router
   .route('/api/expenses/yearly')
   .get(authCtrl.requireSignin, expenseCtrl.yearlyExpenses);
 
