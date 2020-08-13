@@ -10,6 +10,7 @@ import PrivateRoute from './auth/PrivateRoute';
 import Menu from './core/Menu';
 import NewExpense from './expense/newExpense';
 import Expenses from './expense/expenses';
+import Reports from './report/reports';
 
 function MainRouter() {
   return (
@@ -32,6 +33,10 @@ function MainRouter() {
         <PrivateRoute
           path="/expenses/new"
           component={NewExpense}
+        />
+        <PrivateRoute
+          path="/expenses/reports"
+          component={Reports}
         />
       </Switch>
     </div>

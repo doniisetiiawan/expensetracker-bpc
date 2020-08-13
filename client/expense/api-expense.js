@@ -72,6 +72,30 @@ const expenseByCategory = async (credentials, signal) => {
   }
 };
 
+const plotExpenses = async (
+  params,
+  credentials,
+  signal,
+) => {
+  const query = queryString.stringify(params);
+  try {
+    const response = await fetch(
+      `/api/expenses/plot?${query}`,
+      {
+        method: 'GET',
+        signal,
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${credentials.t}`,
+        },
+      },
+    );
+    return await response.json();
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const update = async (params, credentials, expense) => {
   try {
     const response = await fetch(
@@ -118,4 +142,5 @@ export {
   remove,
   currentMonthPreview,
   expenseByCategory,
+  plotExpenses,
 };
