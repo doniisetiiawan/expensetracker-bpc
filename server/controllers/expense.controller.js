@@ -242,6 +242,35 @@ const expenseByCategory = async (req, res) => {
   }
 };
 
+const yearlyExpenses = async (req, res) => {
+  const y = req.query.year;
+  const firstDay = new Date(y, 0, 1);
+  const lastDay = new Date(y, 12, 0);
+  try {
+    const totalMonthly = await Expense.aggregate([
+      {
+        $match: {
+          incurred_on: { $gte: firstDay, $lt: lastDay },
+          recorded_by: mongoose.Types.ObjectId(req.auth._id),
+        },
+      },
+      {
+        $group: {
+          _id: { $month: '$incurred_on' },
+          totalSpent: { $sum: '$amount' },
+        },
+      },
+      { $project: { x: '$_id', y: '$totalSpent' } },
+    ]).exec();
+    res.json({ monthTot: totalMonthly });
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({
+      error: errorHandler.getErrorMessage(err),
+    });
+  }
+};
+
 const plotExpenses = async (req, res) => {
   const date = new Date(req.query.month);
   const y = date.getFullYear();
@@ -321,4 +350,5 @@ export default {
   currentMonthPreview,
   expenseByCategory,
   plotExpenses,
+  yearlyExpenses,
 };
